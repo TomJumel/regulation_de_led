@@ -43,7 +43,7 @@ void _taskCapteur(void *args)
         // filtre numérique intensité
         double intent = filter(newVSAOP);
         global.intesite = intent;
-        Serial.printf("%u,%u\n\r", newVSAOP,0);
+        Serial.printf("%u,%u,%u\n\r", newVSAOP,global.intesite,0);
         
         global.voltage = filterBat(analogRead(ANALOG_VOLTAGE)/1.24);
         global.batterie = batterieValuePercent();
