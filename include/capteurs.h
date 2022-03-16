@@ -31,7 +31,7 @@ TaskHandle_t capteurHandle = NULL;
 // I_Ve=1.818*Vs
 double filter(double in);
 double filterBat(double in);
-void _taskCapteur(void *args)
+void _taskRegulation(void *args)
 {
     uint8_t compteur = 0;
     unsigned long lastTime = micros();
@@ -43,9 +43,8 @@ void _taskCapteur(void *args)
         // filtre numérique intensité
         double intent = filter(newVSAOP);
         global.intesite = intent;
-        Serial.printf("%u,%u,%u\n\r", newVSAOP,global.intesite,0);
-        
-        global.voltage = filterBat(analogRead(ANALOG_VOLTAGE)/1.24);
+
+        global.voltage = filterBat((analogRead(ANALOG_VOLTAGE) / 1.24) * 2);
         global.batterie = batterieValuePercent();
         float v = global.voltage / 1000.0;
         float e = global.intesite / 1000.0;
@@ -60,7 +59,8 @@ void _taskCapteur(void *args)
         //
         global.current_PWM = pwm; //*0.008+global.current_PWM*0.992;
 
-        
+        Serial.printf("%u,%u,%u,%u\n\r", global.intesite, global.consigne, global.current_PWM, global.voltage, 0);
+
         ledcWrite(PWM_CHANNEL, global.current_PWM);
         // Screen repaint every 100ms
         lastTime = micros();
@@ -74,17 +74,17 @@ void _taskCapteur(void *args)
     vTaskDelete(capteurHandle);
 }
 
-void initCapteurs()
+void initCapteur()
 {
     analogReadResolution(12);
-    xTaskCreate(_taskCapteur, "CAPTEUR_TASK", 4096, NULL, 1, &capteurHandle);
+    xTaskCreate(_taskRegulation, "CAPTEUR_TASK", 4096, NULL, 1, &capteurHandle);
 }
-//y(n)=(x(n)+x(n−1)+19y(n−1))∗0.0476
+// y(n)=(x(n)+x(n−1)+19y(n−1))∗0.0476
 double x1_var = 0;
 double y1_var = 0;
 double filter(double in)
 {
-    double y = (in+x1_var+19.0*y1_var)*0.0476;
+    double y = (in + x1_var + 19.0 * y1_var) * 0.0476;
     x1_var = in;
     y1_var = y;
     return y;
@@ -94,7 +94,7 @@ double x1_var_batterie = 0;
 double y1_var_batterie = 0;
 double filterBat(double in)
 {
-    double y = (in+x1_var_batterie+19.0*y1_var_batterie)*0.0476;
+    double y = (in + x1_var_batterie + 19.0 * y1_var_batterie) * 0.0476;
     x1_var_batterie = in;
     y1_var_batterie = y;
     return y;

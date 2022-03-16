@@ -17,7 +17,7 @@ void setup()
   loadSavedData();
   initPWM();
   initTft();
-  initCapteurs();
+  initCapteur();
   initButtons();
   Serial.println(global.current_PWM);
 }
