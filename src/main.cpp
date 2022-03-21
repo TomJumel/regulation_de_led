@@ -25,4 +25,6 @@ void loop()
 {
   delay(2000);
   global.consigne = 400;
+  delay(2000);
+  global.consigne = 100;
 }
