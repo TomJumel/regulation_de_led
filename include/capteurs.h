@@ -51,20 +51,23 @@ void _taskRegulation(void *args)
         global.power = v * e;
 
         // TODO : Régulation
-        int erreur = global.consigne - global.intesite;
-        int pwmE = PWM_MAX - global.current_PWM;
-        int pwm = pwmE + erreur / 100;
-
-        pwm = PWM_MAX - constrain(pwm, 0, PWM_MAX);
-        //
-        global.current_PWM = pwm; //*0.008+global.current_PWM*0.992;
-
+        if (!global.consigne)
+        {
+            global.current_PWM = 0;
+            ledcWrite(PWM_CHANNEL, PWM_MAX);
+        }
+        else
+        {
+            int erreur = global.consigne - global.intesite;
+            int pwmE = PWM_MAX - global.current_PWM;
+            int pwm = pwmE + erreur / 100;
+            pwm = PWM_MAX - constrain(pwm, 0, PWM_MAX);
+            global.current_PWM = pwm; //*0.008+global.current_PWM*0.992;
+            ledcWrite(PWM_CHANNEL, global.current_PWM);
+        }
         Serial.printf("%u,%u,%u,%u\n\r", global.intesite, global.consigne, global.current_PWM, global.voltage, 0);
-
-        ledcWrite(PWM_CHANNEL, global.current_PWM);
         // Screen repaint every 100ms
-        lastTime = micros();
-        if (compteur > 100)
+        if (compteur > 1000)
         {
             requestSceenRepaint();
             compteur = 0;

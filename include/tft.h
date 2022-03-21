@@ -80,7 +80,7 @@ void _tftTask(void *arg)
             }
             // Puissance cons
             tft.drawString("       ", (tft.width() / 2) - (tft.textWidth("       ") / 2), 230);
-            String power = (String(global.intesite) + "mI");
+            String power = (String(global.intesite) + "mA");
             tft.drawString(power.c_str(), (tft.width() / 2) - tft.textWidth(power) / 2, 230);
             // Buttons
             tft.drawRoundRect(-2, 231, 20, 11, 3, TFT_WHITE);

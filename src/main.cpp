@@ -19,12 +19,9 @@ void setup()
   initTft();
   initCapteur();
   initButtons();
-  Serial.println(global.current_PWM);
 }
 void loop()
 {
   delay(2000);
-  global.consigne = 400;
-  delay(2000);
-  global.consigne = 100;
+  saveLoop();
 }

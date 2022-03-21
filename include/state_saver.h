@@ -13,6 +13,7 @@ void loadSavedData(){
     _preferences.getBytes("data",globalPtr,sizeof(global));
     global.lastUserActivity = millis();
     global.current_PWM = 1024;
+    global.consigne = 0;
 }
 void saveLoop(){
     global_struct *globalPtr = &global;
